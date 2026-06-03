@@ -1,7 +1,8 @@
 <script setup lang="ts">
 	import { ref } from 'vue'
-	//todo: api call for fetching transactions
-	const items = [
+	import axios from 'axios'
+
+	const items = ref([
 		{
 			origin: '123456789',
 			destination: '453456789',
@@ -18,11 +19,22 @@
 			transferDate: '2026-06-15',
 			createdAt: '2026-06-03'
 		},
-	];
+	]);
+	const loaded = ref(false);
+
+	//todo: api call for fetching transactions
+	axios.get('http://localhost:8080/api/transactions').then((response) => {
+	  items.value = response.data;
+	  loaded.value = true;
+	}).catch((err) => {
+		console.log(err);
+		items.value = [];
+		loaded.value = true;
+	});
 </script>
 
 <template>
-	<table>
+	<table v-if="loaded && items.length >= 1">
 		<thead>
 			<tr>
 		    	<th>Conta Origem</th>
@@ -34,7 +46,7 @@
 		    </tr>
 		</thead>
 		<tbody>
-			<tr v-for="item in items">
+			<tr v-for="item in items" :key="item.origin + item.createdAt">
 				<td>{{ item.origin }}</td>
 				<td>{{ item.destination }}</td>
 				<td>{{ item.value }}</td>
@@ -44,6 +56,12 @@
 			</tr>
 		</tbody>
 	</table>
+	<div v-if="loaded && items.length < 1">
+		Não há itens para exibir
+	</div>
+	<div v-if="!loaded">
+		Carregando...
+	</div>
 </template>
 
 <style scoped>
