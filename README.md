@@ -1,6 +1,6 @@
 # Finance Scheduler - API & Frontend
 
-Este projeto consiste em uma solução completa para agendamento financeiro, composta por uma API REST desenvolvida em **Spring Boot** e uma aplicação client em **Vue.js com TypeScript**.
+Este projeto consiste em uma solução Fullstack para agendamento de transferências financeiras, composta por uma API REST desenvolvida em **Spring Boot** e uma aplicação client em **Vue.js com TypeScript**.
 
 ---
 
@@ -62,7 +62,7 @@ npm install
 npm run dev
 ```
 
-O frontend estará disponível no endereço `http://localhost:5173`.
+O frontend estará disponível no endereço http://localhost:5173.
 
 ---
 
