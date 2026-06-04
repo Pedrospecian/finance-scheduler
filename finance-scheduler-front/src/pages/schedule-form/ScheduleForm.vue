@@ -1,33 +1,31 @@
 <script setup lang="ts">
-	import FormInput from '../../components/FormInput.vue'
-	import fntFormatMoney from '../../helpers/fntFormatMoney.ts'
+	import FormInput from '../../components/FormInput.vue';
+	import fntFormatMoney from '../../helpers/fntFormatMoney.ts';
 	import { toast } from 'vue3-toastify';
 	import 'vue3-toastify/dist/index.css';
-	import { ref } from 'vue'
-	import axios from 'axios'
+	import { ref } from 'vue';
+	import axios from 'axios';
+	import { router } from '../../router.ts';
 
 	const contaOrigem = ref('')
 	const contaDestino = ref('')
 	const valorTransferencia = ref('')
 	const dataTransferencia = ref('')
-	const errorMessage = ref('');
 	const valorTaxa = ref('');
 	const statusCalculoValorTaxa = ref(true);
 	const isSubmitting = ref(false);
 
-	//todo: api call for getting transfer rate
 	const calcularTaxa = async () => {
 		axios.get(`http://localhost:8080/api/transactions/utils/calcular-taxa?transferDate=${dataTransferencia._value}&value=${valorTransferencia._value}`).then((response) => {
-		  console.log('response--->', response);
 		  valorTaxa.value = response.data.taxa;
 		  statusCalculoValorTaxa.value = true;
 		}).catch((err) => {
-			console.log('err--->', err, err.response.data.error);
 			if (err.response.data.error === 'Bad Request') {
-				errorMessage.value = 'Por favor, informe a data e o valor da transferência.';
+				toast.error('Por favor, informe a data e o valor da transferência.');
 			} else {
-				errorMessage.value = err.response.data.error;
+				toast.error(err.response.data.error);
 			}
+			valorTaxa.value = '';
 			statusCalculoValorTaxa.value = false;
 		});
 	}
@@ -40,14 +38,26 @@
 		return true;
 	}
 
+	const fntValidateTransferDate = () => {
+	    let start = new Date();
+	    let end = new Date(dataTransferencia.value);
+	    let timeDiff = end - start;
+	    return Math.ceil((timeDiff / (1000 * 3600 * 24)) + 1) >= 0;
+	}
+
 	const fntTransferir = () => {
-		console.log('treste');
 		if (!fntIsFormValid()) {
-			statusCalculoValorTaxa.value = false;
 			return;
 		}
-		errorMessage.value = '';
-		console.log('treste-->', contaOrigem._value, contaDestino._value, valorTransferencia._value, dataTransferencia._value);
+
+		if (contaOrigem._value === contaDestino._value) {
+			return toast.error('A conta de destino não pode ser a mesma que a conta de origem');
+		}
+
+		if (!fntValidateTransferDate()) {
+			return toast.error('A data escolhida não pode ser anterior à data atual. Por favor, escolha outra data.');
+		}
+
 		isSubmitting.value = true;
 
 		const obj = {
@@ -58,17 +68,18 @@
 		}
 
 		axios.post('http://localhost:8080/api/transactions', obj).then((response) => {
-			console.log('submitrespoonse--->', response);
-			isSubmitting.value = false;
+			toast.success('Transação efetuada com sucesso!');
+			setTimeout(() => {
+				router.push('/transactions');
+			}, 3000);
 		}).catch((err) => {
-			console.log('submiter--->', err);
 			toast.error(err.response.data.error);
 			isSubmitting.value = false;
 		});
 	}
 
 	const fntDisableSubmit = () => {
-		return isSubmitting.value || !fntIsFormValid() || (!statusCalculoValorTaxa && errorMessage);
+		return isSubmitting.value || !fntIsFormValid() || (!statusCalculoValorTaxa);
 	}
 
 </script>
@@ -99,6 +110,7 @@
 			fieldType="currency"
 			v-model="valorTransferencia"
 			modelValue="valorTransferencia"
+			placeholder="R$ 0,00"
 		/>
 		<FormInput
 			title="Data da transferência"
@@ -109,8 +121,7 @@
 			@change="calcularTaxa()"
 		/>
 
-		<div v-if="statusCalculoValorTaxa" class="subtotal">Taxa de transferência: {{ fntFormatMoney(valorTaxa) }}</div>
-		<div v-if="!statusCalculoValorTaxa && errorMessage" class="feedback-error">{{ errorMessage }}</div>
+		<div v-if="valorTaxa" class="subtotal">Taxa de transferência: {{ fntFormatMoney(valorTaxa) }}</div>
 		<button
 			type="button"
 			@click="fntTransferir"
