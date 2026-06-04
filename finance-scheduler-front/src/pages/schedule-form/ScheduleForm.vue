@@ -3,7 +3,7 @@
 	import fntFormatMoney from '../../helpers/fntFormatMoney.ts';
 	import { toast } from 'vue3-toastify';
 	import 'vue3-toastify/dist/index.css';
-	import { ref } from 'vue';
+	import { ref, watch } from 'vue';
 	import axios from 'axios';
 	import { router } from '../../router.ts';
 
@@ -15,7 +15,7 @@
 	const statusCalculoValorTaxa = ref(true);
 	const isSubmitting = ref(false);
 
-	const calcularTaxa = async () => {
+	const fntCalcularTaxa = async () => {
 		axios.get(`http://localhost:8080/api/transactions/utils/calcular-taxa?transferDate=${dataTransferencia._value}&value=${valorTransferencia._value}`).then((response) => {
 		  valorTaxa.value = response.data.taxa;
 		  statusCalculoValorTaxa.value = true;
@@ -29,6 +29,12 @@
 			statusCalculoValorTaxa.value = false;
 		});
 	}
+
+	watch([dataTransferencia, valorTransferencia], () => {
+		if (dataTransferencia._value && valorTransferencia._value) {
+			fntCalcularTaxa();
+		}
+	});
 
 	const fntIsFormValid = () => {
 		if (!contaOrigem._value || !contaDestino._value || !valorTransferencia._value || !dataTransferencia.value) {
@@ -119,7 +125,6 @@
 			fieldType="date"
 			v-model="dataTransferencia"
 			modelValue="dataTransferencia"
-			@change="calcularTaxa()"
 		/>
 
 		<div v-if="valorTaxa" class="subtotal">Taxa de transferência: {{ fntFormatMoney(valorTaxa) }}</div>
