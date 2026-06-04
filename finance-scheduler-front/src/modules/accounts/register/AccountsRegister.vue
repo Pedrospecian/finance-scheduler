@@ -1,11 +1,11 @@
 <script setup lang="ts">
-	import FormInput from '../../components/FormInput.vue';
-	import fntFormatMoney from '../../helpers/fntFormatMoney.ts';
+	import FormInput from '../../../components/FormInput/FormInput.vue';
+	import fntFormatMoney from '../../../helpers/fntFormatMoney.ts';
 	import { toast } from 'vue3-toastify';
 	import 'vue3-toastify/dist/index.css';
 	import { ref } from 'vue';
 	import axios from 'axios';
-	import { router } from '../../router.ts';
+	import { router } from '../../../router.ts';
 
 	const conta = ref('')
 	const saldoInicial = ref(0)

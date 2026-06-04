@@ -1,18 +1,24 @@
 import { createMemoryHistory, createRouter } from 'vue-router';
 
-import ScheduleForm from './pages/schedule-form/ScheduleForm.vue';
-import ScheduledTransactions from './pages/scheduled-transactions/ScheduledTransactions.vue';
-import NewAccountForm from './pages/new-account-form/NewAccountForm.vue';
-import AccountsList from './pages/accounts-list/AccountsList.vue';
+import HomePage from './modules/home/HomePage.vue';
+
+import RegisterTransaction from './modules/transactions/register/RegisterTransaction.vue';
+import TransactionsList from './modules/transactions/list/TransactionsList.vue';
+
+import AccountsRegister from './modules/accounts/register/AccountsRegister.vue';
+import AccountsList from './modules/accounts/list/AccountsList.vue';
 
 const routes = [
-  { path: '/', component: ScheduleForm },
-  { path: '/transactions', component: ScheduledTransactions },
-  { path: '/new-account', component: NewAccountForm },
-  { path: '/accounts', component: AccountsList },
+	{ path: '/', component: HomePage },
+
+	{ path: '/new-transaction', component: RegisterTransaction },
+	{ path: '/transactions', component: TransactionsList },
+
+	{ path: '/new-account', component: AccountsRegister },
+	{ path: '/accounts', component: AccountsList },
 ]
 
 export const router = createRouter({
-  history: createMemoryHistory(),
-  routes,
+	history: createMemoryHistory(),
+	routes,
 })

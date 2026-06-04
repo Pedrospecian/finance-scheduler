@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import fntFormatMoney from '../../helpers/fntFormatMoney.ts';
+	import fntFormatMoney from '../../../helpers/fntFormatMoney.ts';
 	import DataTable from 'primevue/datatable';
 	import Column from 'primevue/column';
 	import { ref, watch } from 'vue';

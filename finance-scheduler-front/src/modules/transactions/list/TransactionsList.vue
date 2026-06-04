@@ -1,8 +1,8 @@
 <script setup lang="ts">
-	import fntFormatMoney from '../../helpers/fntFormatMoney.ts';
-	import fntFormatDate from '../../helpers/fntFormatDate.ts';
+	import fntFormatMoney from '../../../helpers/fntFormatMoney.ts';
+	import fntFormatDate from '../../../helpers/fntFormatDate.ts';
 	import DataTable from 'primevue/datatable';
-	import FormInput from '../../components/FormInput.vue';
+	import FormInput from '../../../components/FormInput/FormInput.vue';
 	import Column from 'primevue/column';
 	import { ref, watch } from 'vue';
 	import axios from 'axios';
