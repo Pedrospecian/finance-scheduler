@@ -71,7 +71,7 @@
 			toast.success('Transação efetuada com sucesso!');
 			setTimeout(() => {
 				router.push('/transactions');
-			}, 3000);
+			}, 1000);
 		}).catch((err) => {
 			toast.error(err.response.data.error);
 			isSubmitting.value = false;
@@ -85,7 +85,8 @@
 </script>
 
 <template>
-	<form action="">
+	<h1 class="title">Nova Transação</h1>
+	<form action="" class="form-box">
 		<FormInput
 			title="Conta de origem"
 			id="contaOrigem"
@@ -126,7 +127,7 @@
 			type="button"
 			@click="fntTransferir"
 			:disabled="fntDisableSubmit()"
-			v-bind:class="{'disabled': fntDisableSubmit()}"
+			v-bind:class="{'button-submit': true, 'disabled': fntDisableSubmit()}"
 		>
 			Transferir
 		</button>
@@ -134,46 +135,4 @@
 </template>
 
 <style scoped>
-	form {
-		display: flex;
-		flex-direction: column;
-		box-sizing: border-box;
-		margin-left: auto;
-		margin-right: auto;
-		padding: 24px;
-		width: calc(100% - 30px);
-		max-width: 600px;
-		border-radius: 6px;
-		-webkit-box-shadow: 3px 3px 15px -4px rgba(0,0,0,0.5); 
-		box-shadow: 3px 3px 15px -4px rgba(0,0,0,0.5);
-	}
-
-	.subtotal {
-		margin-bottom: 12px;
-	}
-
-	.feedback-error {
-		padding: 12px;
-		border-radius: 6px;
-		color: #ffffff;
-		background-color: #ff9999;
-		text-align: center;
-		margin-top: 12px;
-		margin-bottom: 12px;
-	}
-
-	button {
-		background-color: cadetblue;
-		color: #ffffff;
-		border: none;
-		border-radius: 6px;
-		padding: 12px;
-		width: 100%;
-		cursor: pointer;
-	}
-
-	button.disabled {
-		opacity: 0.5;
-		cursor: default;
-	}
 </style>

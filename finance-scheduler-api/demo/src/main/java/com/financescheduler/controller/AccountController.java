@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
  
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
  
 @RestController
 @RequestMapping("/api/accounts")
@@ -32,8 +33,16 @@ public class AccountController {
      
     // POST /api/account - Criar nova conta
     @PostMapping
-    public Account criar(@RequestBody Account account) {
-        return accountRepository.save(account);
+    public ResponseEntity<?> criarConta(@RequestBody Account newAccount) {
+        Account existingAccount = accountRepository.findByAccountNumber(newAccount.getAccountNumber());
+        
+        if (existingAccount != null) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Já existe uma conta cadastrada com este número."));
+        }
+
+        Account savedAccount = accountRepository.save(newAccount);
+        return ResponseEntity.ok(savedAccount);
     }
      
     // PUT /api/account/{id} - Atualizar conta
