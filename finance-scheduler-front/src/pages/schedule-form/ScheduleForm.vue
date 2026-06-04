@@ -1,71 +1,74 @@
 <script setup lang="ts">
 	import FormInput from '../../components/FormInput.vue'
+	import fntFormatMoney from '../../helpers/fntFormatMoney.ts'
+	import { toast } from 'vue3-toastify';
+	import 'vue3-toastify/dist/index.css';
 	import { ref } from 'vue'
+	import axios from 'axios'
 
 	const contaOrigem = ref('')
 	const contaDestino = ref('')
 	const valorTransferencia = ref('')
 	const dataTransferencia = ref('')
 	const errorMessage = ref('');
-
-	const taxaTransferencia = () => {
-		if (dataTransferencia._value && valorTransferencia._value) {
-			const today = new Date();
-			const transferDate = new Date(dataTransferencia._value);
-
-			const diffTime = transferDate - today;
-			const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-			console.log(diffDays);
-
-			if (diffDays < 0) {
-				errorMessage._value = 'A data escolhida não pode ser anterior à data atual. Por favor, escolha outra data.'
-				return 'ERRO';
-			}
-
-			if (diffDays < 1) {
-				errorMessage._value = '';
-				return 3.0 + valorTransferencia._value * 0.025;
-			} else if (diffDays <= 10) {
-				errorMessage._value = '';
-				return 12.0 + valorTransferencia._value * 0.0;
-			} else if (diffDays <= 20) {
-				errorMessage._value = '';
-				return valorTransferencia._value * 0.082;
-			} else if (diffDays <= 30) {
-				errorMessage._value = '';
-				return valorTransferencia._value * 0.069;
-			} else if (diffDays <= 40) {
-				errorMessage._value = '';
-				return valorTransferencia._value * 0.047;
-			} else if (diffDays <= 50) {
-				errorMessage._value = '';
-				return valorTransferencia._value * 0.017;
-			} else {
-				errorMessage._value = 'Não há taxa aplicável para a data selecionada. Por favor, escolha outra data.'
-				return 'ERRO';
-			}
-		} else {
-			errorMessage._value = 'Por favor, informe a data e o valor da transferência.'
-			return 'ERRO';
-		}
-	}
+	const valorTaxa = ref('');
+	const statusCalculoValorTaxa = ref(true);
+	const isSubmitting = ref(false);
 
 	//todo: api call for getting transfer rate
-
-	//todo: api call for submitting form
-
-	const fntValidTaxaTransferencia = () => {
-		return taxaTransferencia() !== 'ERRO';
+	const calcularTaxa = async () => {
+		axios.get(`http://localhost:8080/api/transactions/utils/calcular-taxa?transferDate=${dataTransferencia._value}&value=${valorTransferencia._value}`).then((response) => {
+		  console.log('response--->', response);
+		  valorTaxa.value = response.data.taxa;
+		  statusCalculoValorTaxa.value = true;
+		}).catch((err) => {
+			console.log('err--->', err, err.response.data.error);
+			if (err.response.data.error === 'Bad Request') {
+				errorMessage.value = 'Por favor, informe a data e o valor da transferência.';
+			} else {
+				errorMessage.value = err.response.data.error;
+			}
+			statusCalculoValorTaxa.value = false;
+		});
 	}
 
-	const fntFormatPrice = (price) => {
-		return price.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+	const fntIsFormValid = () => {
+		if (!contaOrigem._value || !contaDestino._value || !valorTransferencia._value || !dataTransferencia.value) {
+			return false;
+		}
+
+		return true;
 	}
 
 	const fntTransferir = () => {
-		console.log(contaOrigem._value, contaDestino._value, valorTransferencia._value, dataTransferencia._value);
-		return null;
+		console.log('treste');
+		if (!fntIsFormValid()) {
+			statusCalculoValorTaxa.value = false;
+			return;
+		}
+		errorMessage.value = '';
+		console.log('treste-->', contaOrigem._value, contaDestino._value, valorTransferencia._value, dataTransferencia._value);
+		isSubmitting.value = true;
+
+		const obj = {
+			origin: contaOrigem._value,
+			destination: contaDestino._value,
+			transferDate: dataTransferencia.value,
+			value: valorTransferencia.value,
+		}
+
+		axios.post('http://localhost:8080/api/transactions', obj).then((response) => {
+			console.log('submitrespoonse--->', response);
+			isSubmitting.value = false;
+		}).catch((err) => {
+			console.log('submiter--->', err);
+			toast.error(err.response.data.error);
+			isSubmitting.value = false;
+		});
+	}
+
+	const fntDisableSubmit = () => {
+		return isSubmitting.value || !fntIsFormValid() || (!statusCalculoValorTaxa && errorMessage);
 	}
 
 </script>
@@ -103,11 +106,19 @@
 			fieldType="date"
 			v-model="dataTransferencia"
 			modelValue="dataTransferencia"
+			@change="calcularTaxa()"
 		/>
 
-		<div v-if="fntValidTaxaTransferencia()" class="subtotal">Taxa de transferência: {{ fntFormatPrice(taxaTransferencia()) }}</div>
-		<div v-if="!fntValidTaxaTransferencia() && errorMessage" class="feedback-error">{{ errorMessage }}</div>
-		<button type="button" @click="fntTransferir()">Transferir</button>
+		<div v-if="statusCalculoValorTaxa" class="subtotal">Taxa de transferência: {{ fntFormatMoney(valorTaxa) }}</div>
+		<div v-if="!statusCalculoValorTaxa && errorMessage" class="feedback-error">{{ errorMessage }}</div>
+		<button
+			type="button"
+			@click="fntTransferir"
+			:disabled="fntDisableSubmit()"
+			v-bind:class="{'disabled': fntDisableSubmit()}"
+		>
+			Transferir
+		</button>
 	</form>
 </template>
 
@@ -148,5 +159,10 @@
 		padding: 12px;
 		width: 100%;
 		cursor: pointer;
+	}
+
+	button.disabled {
+		opacity: 0.5;
+		cursor: default;
 	}
 </style>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import fntFormatMoney from '../../helpers/fntFormatMoney.ts'
 	import { ref } from 'vue'
 	import axios from 'axios'
 
@@ -22,7 +23,6 @@
 	]);
 	const loaded = ref(false);
 
-	//todo: api call for fetching transactions
 	axios.get('http://localhost:8080/api/transactions').then((response) => {
 	  items.value = response.data;
 	  loaded.value = true;
@@ -47,10 +47,10 @@
 		</thead>
 		<tbody>
 			<tr v-for="item in items" :key="item.origin + item.createdAt">
-				<td>{{ item.origin }}</td>
-				<td>{{ item.destination }}</td>
-				<td>{{ item.value }}</td>
-				<td>{{ item.transferRate }}</td>
+				<td>{{ item.origin.accountNumber }}</td>
+				<td>{{ item.destination.accountNumber }}</td>
+				<td>{{ fntFormatMoney(item.value) }}</td>
+				<td>{{ fntFormatMoney(item.transferRate) }}</td>
 				<td>{{ item.transferDate }}</td>
 				<td>{{ item.createdAt }}</td>
 			</tr>
