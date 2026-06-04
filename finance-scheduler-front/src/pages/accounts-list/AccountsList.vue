@@ -21,7 +21,7 @@
 <template>
 	<h1 class="title">Lista de Contas</h1>
 
-	<DataTable v-if="loaded && items.length >= 1" :value="items" tableStyle="min-width: 50rem">
+	<DataTable v-if="loaded && items.length >= 1" :value="items" tableStyle="min-width: 800px">
 	    <Column field="id" header="#"></Column>
 	    <Column field="accountNumber" header="Número da Conta"></Column>
 	    <Column header="Saldo Inicial">
