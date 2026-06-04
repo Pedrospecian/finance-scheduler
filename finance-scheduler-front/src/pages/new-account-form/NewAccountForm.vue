@@ -35,7 +35,7 @@
 			toast.success('Conta criada com sucesso!');
 			setTimeout(() => {
 				router.push('/accounts');
-			}, 1000);
+			}, 500);
 		}).catch((err) => {
 			console.log('err-->', err.response);
 			toast.error(err.response.data.error);

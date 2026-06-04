@@ -4,10 +4,11 @@
 
 - Decidi implementar páginas de criação e listagem de contas para que o usuário pudesse cadastrá-las diretamente pela aplicação
 
-- Coloquei busca e paginação na página de transações para que o usuário possa facilmente filtrar os dados desejados em casos onde há uma quantidade massiva de transações cadastradas no sistema
+- Coloquei busca e paginação na página de transações para que o usuário possa facilmente filtrar os dados desejados em casos onde há uma quantidade massiva de transações cadastradas no sistema. Inicialmente, eu havia implementado uma busca dinâmica utilizando "computed", mas decidi não seguir dessa forma, pois a busca se tornaria ineficiente em casos onde há dezenas de milhares de registros
 
 -TODO:
 	
+	- implementar busca de transações por range de datas
 	- refatorar páginas de conta e transação para que elas fiquem separados em módulos (com escalabilidade em mente)
 	- informar os passo-a-passos da execução do sistema
 	- informar as versões de linguagem utilizadas

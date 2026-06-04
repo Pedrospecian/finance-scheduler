@@ -49,30 +49,6 @@
 		searchQuery.value = '';
 	}
 
-	/*const filteredItems = computed(() => {
-		const query = searchQuery.value.trim().toLowerCase();
-		
-		if (!query) return items.value;
-
-		return items.value.filter((item: any) => {
-			const originMatch = item.origin?.accountNumber?.toLowerCase().includes(query);
-			const destinationMatch = item.destination?.accountNumber?.toLowerCase().includes(query);
-			const transferDateMatch = item.transferDate?.includes(query);
-			const createdAtMatch = item.createdAt?.includes(query);
-			
-			// Switch behavior based on the chosen criteria selection
-			if (searchCriteria.value === 'origin') {
-				return originMatch;
-			} else if (searchCriteria.value === 'destination') {
-				return destinationMatch;
-			} else if (searchCriteria.value === 'transferDate') {
-				return transferDateMatch;
-			} else {
-				return createdAtMatch;
-			}
-		});
-	});*/
-
 	fntGetList();
 </script>
 
@@ -144,7 +120,7 @@
 	    </Column>
 	</DataTable>
 
-	<div v-if="loaded && items.length < 1">
+	<div class="no-items" v-if="loaded && items.length < 1">
 		Não há itens para exibir
 	</div>
 	<div v-if="!loaded">
@@ -153,34 +129,4 @@
 </template>
 
 <style scoped>
-	.search-container {
-		display: flex;
-		gap: 18px;
-		margin-bottom: 12px;
-		max-width: 600px;
-		padding: 24px 12px;
-		width: 100%;
-		box-sizing: border-box;
-	}
-	.search-select {
-		padding: 12px;
-		font-size: 14px;
-		border: 1px solid #ccc;
-		border-radius: 6px;
-		background-color: white;
-		cursor: pointer;
-	}
-	.search-input {
-		flex: 1;
-		padding: 12px;
-		font-size: 14px;
-		border: 1px solid #ccc;
-		border-radius: 6px;
-		box-sizing: border-box;
-	}
-	.search-input:focus, .search-select:focus {
-		outline: none;
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-	}
 </style>

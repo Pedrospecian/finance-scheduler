@@ -71,7 +71,7 @@
 			toast.success('Transação efetuada com sucesso!');
 			setTimeout(() => {
 				router.push('/transactions');
-			}, 1000);
+			}, 500);
 		}).catch((err) => {
 			toast.error(err.response.data.error);
 			isSubmitting.value = false;
