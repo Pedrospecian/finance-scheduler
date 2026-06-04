@@ -8,7 +8,6 @@
 
 -TODO:
 	
-	- implementar busca de transações por range de datas
-	- refatorar páginas de conta e transação para que elas fiquem separados em módulos (com escalabilidade em mente)
+	- refatorar páginas de conta e transação para que elas fiquem separadas em módulos (com escalabilidade em mente)
 	- informar os passo-a-passos da execução do sistema
 	- informar as versões de linguagem utilizadas

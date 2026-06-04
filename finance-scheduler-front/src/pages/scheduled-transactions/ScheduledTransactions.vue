@@ -14,14 +14,20 @@
 	const currentPage = ref(0);
 	const searchQuery = ref('');
 	const searchCriteria = ref('origin');
+	const startDate = ref('');
+	const endDate = ref('');
 
 	const fntGetList = () => {
+		const isDateCriteria = searchCriteria.value === 'transferDate' || searchCriteria.value === 'createdAt';
+
 		axios.get('http://localhost:8080/api/transactions', {
 			params: {
 				page: currentPage.value,
 				size: rowsPerPage.value,
-				query: searchQuery.value,
+				query: !isDateCriteria ? searchQuery.value : '',
 				criteria: searchCriteria.value,
+				startDate: isDateCriteria && startDate.value ? startDate.value : null,
+				endDate: isDateCriteria && endDate.value ? endDate.value : null
 			}
 		}).then((response) => {
 			items.value = response.data.content;
@@ -34,7 +40,7 @@
 		});
 	}
 
-	watch([searchQuery, searchCriteria], () => {
+	watch([searchQuery, searchCriteria, startDate, endDate], () => {
 		currentPage.value = 0;
 		fntGetList();
 	});
@@ -56,13 +62,11 @@
 	<h1 class="title">Lista de Transações</h1>
 
 	<div class="search-container" v-if="loaded">
-		<input 
-			type="date" 
-			v-model.lazy="searchQuery" 
-			placeholder="Buscar" 
-			class="search-input"
-			v-if="['transferDate', 'createdAt'].includes(searchCriteria)"
-		/>
+		<div v-if="['transferDate', 'createdAt'].includes(searchCriteria)" class="date-range-group">
+			<input type="date" v-model="startDate" class="date-input" />
+			<span>até</span>
+			<input type="date" v-model="endDate" class="date-input" />
+		</div>
 		<input 
 			type="text" 
 			v-model.lazy="searchQuery" 

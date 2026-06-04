@@ -35,11 +35,15 @@ public class TransactionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String query,
-            @RequestParam(defaultValue = "all") String criteria
-        ) {
+            @RequestParam(defaultValue = "all") String criteria,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
                 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Transaction> resultado = transactionRepository.searchTransactions(query, criteria, pageable);
+        
+        Page<Transaction> resultado = transactionRepository.searchTransactions(
+            query, criteria, startDate, endDate, pageable
+        );
         
         return ResponseEntity.ok(resultado);
     }

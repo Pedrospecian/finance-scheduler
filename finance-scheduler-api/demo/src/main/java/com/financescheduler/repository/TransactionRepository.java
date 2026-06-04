@@ -15,20 +15,22 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findById(Long id);
 
     @Query("SELECT t FROM Transaction t WHERE " +
-           // Account Number Search
+           // Busca por número de conta
            "((:criteria = 'all' AND (LOWER(t.origin.accountNumber) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(t.destination.accountNumber) LIKE LOWER(CONCAT('%', :query, '%')))) OR " +
            "(:criteria = 'origin' AND LOWER(t.origin.accountNumber) LIKE LOWER(CONCAT('%', :query, '%'))) OR " +
-           "(:criteria = 'destination' AND LOWER(t.destination.accountNumber) LIKE LOWER(CONCAT('%', :query, '%')))) OR" +
+           "(:criteria = 'destination' AND LOWER(t.destination.accountNumber) LIKE LOWER(CONCAT('%', :query, '%')))) OR " +
            
-           // Transfer Date
-           "(:criteria = 'transferDate' AND :query <> '' AND t.transferDate = CAST(:query AS localdate)) OR " +
+           // Busca por data de transferência
+           "(:criteria = 'transferDate' AND (:startDate IS NULL OR t.transferDate >= :startDate) AND (:endDate IS NULL OR t.transferDate <= :endDate)) OR " +
            
-           // Created Date
-           "(:criteria = 'createdAt' AND :query <> '' AND t.createdAt >= CAST(:query AS localdate))"
+           // Busca por data de criação
+           "(:criteria = 'createdAt' AND (:startDate IS NULL OR t.createdAt >= :startDate) AND (:endDate IS NULL OR t.createdAt <= :endDate))"
     )
     Page<Transaction> searchTransactions(
         @Param("query") String query, 
         @Param("criteria") String criteria,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
         Pageable pageable
     );
 }
