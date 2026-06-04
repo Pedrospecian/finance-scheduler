@@ -24,7 +24,11 @@
 	<DataTable v-if="loaded && items.length >= 1" :value="items" tableStyle="min-width: 50rem">
 	    <Column field="id" header="#"></Column>
 	    <Column field="accountNumber" header="Número da Conta"></Column>
-	    <Column field="balance" header="Saldo Inicial"></Column>
+	    <Column header="Saldo Inicial">
+	    	<template #body="item">
+	            {{ fntFormatMoney(item.data.balance) }}
+	        </template>
+	    </Column>
 	</DataTable>
 
 	<div v-if="loaded && items.length < 1">
