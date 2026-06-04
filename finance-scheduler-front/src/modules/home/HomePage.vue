@@ -51,11 +51,13 @@
 </script>
 
 <template>
-	<h1 class="title">Página inicial</h1>
+	<div class="container">
+		<h1 class="title">Página inicial</h1>
 
-	<p>
-		Seja bem vindo ao Finance Scheduler.
-	</p>
+		<p>
+			Seja bem vindo ao Finance Scheduler.
+		</p>
+	</div>
 </template>
 
 <style scoped>

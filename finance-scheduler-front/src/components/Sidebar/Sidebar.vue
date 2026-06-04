@@ -4,7 +4,7 @@
 <template>
 	<nav>
 		<ul>
-			<li><RouterLink to="/">Página Inicial</RouterLink></li>
+			<li><RouterLink to="/" class="link-home">Página Inicial</RouterLink></li>
 		</ul>
 		<ul>
 			<li>Contas</li>
@@ -46,5 +46,9 @@
 		color: #ffffff;
 		text-decoration: none;
 		margin-left: 12px;
+	}
+
+	nav a.link-home {
+		margin-left: 0px;
 	}
 </style>
