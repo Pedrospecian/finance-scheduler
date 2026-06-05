@@ -43,8 +43,9 @@
 		fntGetList();
 	};
 
-	const fntSearchQueryReset = () => {
+	const fntSearchReset = () => {
 		searchQuery.value = '';
+		fntGetList();
 	}
 
 	fntGetList();
@@ -60,9 +61,15 @@
 			placeholder="Buscar" 
 			class="search-input"
 		/>
-		<select v-model="searchCriteria" class="search-select" @change="fntSearchQueryReset">
+		<select v-model="searchCriteria" class="search-select">
 			<option value="accountNumber">Número da Conta</option>
 		</select>
+		<button class="button-search" @click="fntHandleSearch">
+			Buscar
+		</button>
+		<button class="button-reset" @click="fntSearchReset">
+			Limpar Busca
+		</button>
 	</div>
 
 	<DataTable

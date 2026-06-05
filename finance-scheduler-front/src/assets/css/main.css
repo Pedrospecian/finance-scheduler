@@ -84,11 +84,11 @@ button.disabled {
 .date-range-group {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 8px;
 }
 
 .date-input {
-	padding: 0.75rem;
+	padding: 12px;
 	border: 1px solid #ccc;
 	border-radius: 6px;
 }
@@ -100,4 +100,27 @@ button.disabled {
 	padding-right: 24px;
 	margin-right: auto;
 	margin-left: auto;
+}
+
+.button-search {
+	background-color: #2ea8cc;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	padding: 12px;
+	font-size: 16px;
+	width: 100%;
+	cursor: pointer;
+}
+
+.button-reset {
+	background-color: #ff988c;
+	color: #ffffff;
+	border: none;
+	border-radius: 6px;
+	padding: 12px;
+	font-size: 16px;
+	width: 100%;
+	cursor: pointer;
+	min-width: 133px;
 }

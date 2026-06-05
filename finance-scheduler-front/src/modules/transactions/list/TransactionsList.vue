@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import fntFormatMoney from '../../../helpers/fntFormatMoney.ts';
 	import fntFormatDate from '../../../helpers/fntFormatDate.ts';
+	import { toast } from 'vue3-toastify';
 	import DataTable from 'primevue/datatable';
 	import FormInput from '../../../components/FormInput/FormInput.vue';
 	import Column from 'primevue/column';
@@ -19,6 +20,15 @@
 
 	const fntGetList = () => {
 		const isDateCriteria = searchCriteria.value === 'transferDate' || searchCriteria.value === 'createdAt';
+
+		if (isDateCriteria) {
+			let startDateObject = new Date(startDate.value);
+			let endDateObject = new Date(endDate.value);
+
+			if (endDateObject.getTime() < startDateObject.getTime()) {
+				return toast.error('A data final não pode ser anterior à data inicial.');
+			}
+		}
 
 		axios.get('http://localhost:8080/api/transactions', {
 			params: {
@@ -40,10 +50,28 @@
 		});
 	}
 
-	watch([searchQuery, searchCriteria, startDate, endDate], () => {
+	/*watch([searchQuery, searchCriteria, startDate, endDate], () => {
 		currentPage.value = 0;
 		fntGetList();
-	});
+	});*/
+
+	const fntSetQuickDateRange = (daysAhead: number) => {
+		const today = new Date();
+		const futureDate = new Date();
+		futureDate.setDate(today.getDate() + daysAhead);
+
+		const formatDate = (date: Date) => {
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, '0');
+			const day = String(date.getDate()).padStart(2, '0');
+			return `${year}-${month}-${day}`;
+		};
+
+		startDate.value = formatDate(today);
+		endDate.value = formatDate(futureDate);
+		
+		fntHandleSearch();
+	};
 
 	const onPage = (event: any) => {
 		currentPage.value = event.page;
@@ -51,8 +79,16 @@
 		fntGetList();
 	};
 
-	const fntSearchQueryReset = () => {
+	const fntSearchReset = () => {
 		searchQuery.value = '';
+		startDate.value = '';
+		endDate.value = '';
+		fntGetList();
+	}
+
+	const fntHandleSearch = () => {
+		currentPage.value = 0;
+		fntGetList();
 	}
 
 	fntGetList();
@@ -61,25 +97,44 @@
 <template>
 	<h1 class="title">Lista de Transações</h1>
 
-	<div class="search-container" v-if="loaded">
-		<div v-if="['transferDate', 'createdAt'].includes(searchCriteria)" class="date-range-group">
-			<input type="date" v-model="startDate" class="date-input" />
-			<span>até</span>
-			<input type="date" v-model="endDate" class="date-input" />
+	<div class="search-container search-container-transactions" v-if="loaded">
+		<div class="search-container-main-fields">
+			<div v-if="['transferDate', 'createdAt'].includes(searchCriteria)" class="date-range-group">
+				<input type="date" v-model.lazy="startDate" class="date-input" />
+				<span>até</span>
+				<input type="date" v-model.lazy="endDate" class="date-input" />
+			</div>
+			
+			<input 
+				type="text" 
+				v-model.lazy="searchQuery" 
+				placeholder="Buscar" 
+				class="search-input"
+				v-else
+			/>
+
+			<select v-model="searchCriteria" class="search-select">
+				<option value="origin">Conta de Origem</option>
+				<option value="destination">Conta de Destino</option>
+				<option value="transferDate">Data de Transferência</option>
+				<option value="createdAt">Data de Agendamento</option>
+			</select>
+			
+			<button class="button-search" @click="fntHandleSearch">
+				Buscar
+			</button>
+			<button class="button-reset" @click="fntSearchReset">
+				Limpar Busca
+			</button>
 		</div>
-		<input 
-			type="text" 
-			v-model.lazy="searchQuery" 
-			placeholder="Buscar" 
-			class="search-input"
-			v-else
-		/>
-		<select v-model="searchCriteria" class="search-select" @change="fntSearchQueryReset">
-			<option value="origin">Conta de Origem</option>
-			<option value="destination">Conta de Destino</option>
-			<option value="transferDate">Data de Transferência</option>
-			<option value="createdAt">Data de Agendamento</option>
-		</select>
+		<div class="quick-date-buttons" v-if="['transferDate', 'createdAt'].includes(searchCriteria)">
+			<button type="button" class="button-quick" @click="fntSetQuickDateRange(7)">
+				Próximos 7 dias
+			</button>
+			<button type="button" class="button-quick" @click="fntSetQuickDateRange(14)">
+				Próximos 14 dias
+			</button>
+		</div>
 	</div>
 
 	<DataTable
@@ -133,4 +188,36 @@
 </template>
 
 <style scoped>
+	.quick-date-buttons {
+		display: flex;
+		gap: 5px;
+	}
+	.button-quick {
+		background-color: #f1f5f9;
+		color: #475569;
+		border: 1px solid #cbd5e1;
+		padding: 6px 12px;
+		font-size: 14px;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.button-quick:hover {
+		background-color: #e2e8f0;
+		color: #1e293b;
+		border-color: #94a3b8;
+	}
+
+	.search-container.search-container-transactions {
+		flex-direction: column;
+	}
+
+	.search-container-main-fields {
+		display: flex;
+		gap: 18px;
+		max-width: 600px;
+		width: 100%;
+		box-sizing: border-box;
+	}
 </style>
